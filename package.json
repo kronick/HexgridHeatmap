@@ -1,0 +1,19 @@
+{
+  "name": "hexgridheatmap",
+  "version": "1.0.0",
+  "description": "A hexgrid-based heatmap layer for your Mapbox GL JS map",
+  "main": "HexgridHeatmap.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify index.js -o dist/HexgridHeatmap.js"
+  },
+  "author": "Sam Kronick (@kronick)",
+  "license": "ISC",
+  "dependencies": {
+    "@turf/center": "^3.10.3",
+    "@turf/destination": "^3.10.3",
+    "@turf/distance": "^3.10.3",
+    "@turf/hex-grid": "^3.10.3",
+    "rbush": "^2.0.1"
+  }
+}
