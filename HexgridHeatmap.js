@@ -55,8 +55,8 @@ HexgridHeatmap.prototype = {
         }
         }, addBefore);
 
-        this.layer = map.getLayer(layername);
-        this.source = map.getSource(layername);
+        this.layer = this.map.getLayer(layername);
+        this.source = this.map.getSource(layername);
     },
     _setupEvents: function() {
         var thisthis = this;
