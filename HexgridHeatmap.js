@@ -23,11 +23,11 @@ function HexgridHeatmap(map, layername, addBefore) {
 
     this._intensity = 8;
     this._spread = 0.1;
-    this._minCellIntensity = 10; // Drop out cells that have less than this intensity
+    this._minCellIntensity = 0; // Drop out cells that have less than this intensity
     this._maxPointIntensity = 20; // Don't let a single point have a greater weight than this
 
     var thisthis = this;
-    this._checkUpdateCompleteClosure = function(e) { thisthis.checkUpdateComplete(e); }
+    this._checkUpdateCompleteClosure = function(e) { thisthis._checkUpdateComplete(e); }
     this._calculatingGrid = false;
 }
 
@@ -61,7 +61,7 @@ HexgridHeatmap.prototype = {
     _setupEvents: function() {
         var thisthis = this;
         this.map.on("moveend", function() {
-            this._updateGrid();
+            thisthis._updateGrid();
         });
     },
 
@@ -82,7 +82,6 @@ HexgridHeatmap.prototype = {
       */
     setSpread: function(spread) {
         this._spread = spread;
-        this._generateGrid();
     },
     /**
       * Set the intensity value for all points.
@@ -91,7 +90,20 @@ HexgridHeatmap.prototype = {
       */ 
     setIntensity: function(intensity) {
         this._intensity = intensity;
-        this.updateGrid();
+    },
+    /**
+      * Set custom stops for the heatmap color schem
+      * @param {array} stops - An array of `stops` in the format of the Mapbox GL Style Spec. Values should range from 0 to about 200, though you can control saturation by setting different values here.
+      */
+    setColorStops: function(stops) {
+        this.layer.setPaintProperty("fill-color", {property: "count", stops: stops});
+    },
+    /**
+      * Manually force an update to the heatmap
+      * You can call this method to manually force the heatmap to be redrawn. Use this after calling `setData()`, `setSpread()`, or `setIntensity()`
+      */
+    update: function() {
+        this._updateGrid();
     },
     _generateGrid: function() {
       // Rebuild grid
@@ -109,13 +121,13 @@ HexgridHeatmap.prototype = {
 
       var cellsToSave = [];
  
-      
+      var thisthis = this;
       hexgrid.features.forEach(function(cell) {
         var center = turf.center(cell);
         var strength = 0;
         var SW = turf.destination(center, sigma * 4, -135);
         var NE = turf.destination(center, sigma * 4, 45);
-        var pois = this._tree.search({
+        var pois = thisthis._tree.search({
             minX: SW.geometry.coordinates[0],
             minY: SW.geometry.coordinates[1],
             maxX: NE.geometry.coordinates[0],
@@ -125,20 +137,19 @@ HexgridHeatmap.prototype = {
         pois.forEach(function(poi) {
             // TODO: Allow weight to be influenced by a property within the POI
             var distance = turf.distance(center, poi);
-            var weighted = Math.min(Math.exp(-(distance * distance / (2 * sigma * sigma))) * a * amplitude, this._maxPointIntensity);
+
+            var weighted = Math.min(Math.exp(-(distance * distance / (2 * sigma * sigma))) * a * amplitude, thisthis._maxPointIntensity);
             strength += weighted;
         });
 
         cell.properties.count = strength;
 
-        if(cell.properties.count > this._minCellIntensity) {
+        if(cell.properties.count > thisthis._minCellIntensity) {
             cellsToSave.push(cell);
         }
       });
 
       hexgrid.features = cellsToSave;
-      console.log(distances_calculated + " distance calculations performed.");
-      console.log("Heatmap calculated in " + (performance.now() - tic) + " mS")
       return hexgrid;
 
     },

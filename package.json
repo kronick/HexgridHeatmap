@@ -5,7 +5,8 @@
   "main": "HexgridHeatmap.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify index.js -o dist/HexgridHeatmap.js"
+    "build": "browserify index.js -o dist/HexgridHeatmap.js",
+    "dev": "watchify index.js -o dist/HexgridHeatmap.js --verbose"
   },
   "author": "Sam Kronick (@kronick)",
   "license": "ISC",

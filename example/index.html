@@ -1,0 +1,37 @@
+<!doctype html>
+<head>
+    <meta charset="utf-8">
+    <title>Hexgrid Heatmap</title>
+    
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet' />
+    
+    <script src='../dist/HexgridHeatmap.js'></script>
+    <script src='sightseeing-pois.js'></script>
+</head>
+
+<div id='map' style='width: 800px; height: 600px;'></div>
+<script>
+mapboxgl.accessToken = '<INSERT YOUR MAPBOX ACCESS TOKEN HERE>';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v9',
+    zoom: 12,
+    center: [-122.42534069839593, 37.77444125366313]
+});
+
+map.on("load", function() {
+    var heatmap = new HexgridHeatmap(map, "hexgrid-heatmap", "waterway-label");
+
+    heatmap.setIntensity(15);
+    heatmap.setSpread(0.3);
+    heatmap.setData(sightseeingPOIs);
+    heatmap.update();
+    heatmap.setColorStops([
+        [0, "rgba(0,185,243,0)"],
+        [50, "rgba(0,185,243,0.5)"],
+        [130, "rgba(255,223,0,0.6)"],
+        [200, "rgba(255,105,0,0.6)"]
+    ])
+});
+</script>
