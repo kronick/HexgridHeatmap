@@ -25,10 +25,12 @@ function HexgridHeatmap(map, layername, addBefore) {
     this._spread = 0.1;
     this._minCellIntensity = 0; // Drop out cells that have less than this intensity
     this._maxPointIntensity = 20; // Don't let a single point have a greater weight than this
+    this._cellDensity = 1;
 
     var thisthis = this;
     this._checkUpdateCompleteClosure = function(e) { thisthis._checkUpdateComplete(e); }
     this._calculatingGrid = false;
+    this._recalcWhenReady = false;
 }
 
 HexgridHeatmap.prototype = {
@@ -65,6 +67,7 @@ HexgridHeatmap.prototype = {
         });
     },
 
+
     /**
      * Set the data to visualize with this heatmap layer
      * @param {FeatureCollection} data - A GeoJSON FeatureCollection containing data to visualize with this heatmap
@@ -75,6 +78,8 @@ HexgridHeatmap.prototype = {
         this._tree.clear();
         this._tree.load(data.features);
     },
+
+
     /**
       * Set how widely points affect their neighbors
       * @param {number} spread - A good starting point is 0.1. Higher values will result in more blurred heatmaps, lower values will highlight individual points more strongly.
@@ -83,6 +88,8 @@ HexgridHeatmap.prototype = {
     setSpread: function(spread) {
         this._spread = spread;
     },
+
+
     /**
       * Set the intensity value for all points.
       * @param {number} intensity - Setting this too low will result in no data displayed, setting it too high will result in an oversaturated map. The default is 8 so adjust up or down from there according to the density of your data.
@@ -91,6 +98,8 @@ HexgridHeatmap.prototype = {
     setIntensity: function(intensity) {
         this._intensity = intensity;
     },
+
+
     /**
       * Set custom stops for the heatmap color schem
       * @param {array} stops - An array of `stops` in the format of the Mapbox GL Style Spec. Values should range from 0 to about 200, though you can control saturation by setting different values here.
@@ -98,6 +107,18 @@ HexgridHeatmap.prototype = {
     setColorStops: function(stops) {
         this.layer.setPaintProperty("fill-color", {property: "count", stops: stops});
     },
+
+
+    /**
+      * Set the hexgrid cell density
+      * @param {number} density - Values less than 1 will result in a decreased cell density from the default, values greater than 1 will result in increaded density/higher resolution. Setting this value too high will result in slow performance.
+      * @public
+      */ 
+    setCellDensity: function(density) {
+        this._cellDensity = density;
+    },
+
+
     /**
       * Manually force an update to the heatmap
       * You can call this method to manually force the heatmap to be redrawn. Use this after calling `setData()`, `setSpread()`, or `setIntensity()`
@@ -105,9 +126,13 @@ HexgridHeatmap.prototype = {
     update: function() {
         this._updateGrid();
     },
+
+
     _generateGrid: function() {
       // Rebuild grid
-      var cellSize = Math.min(Math.max(1000/Math.pow(2,this.map.transform.zoom), 0.01), 0.1); // Constant screen size
+      //var cellSize = Math.min(Math.max(1000/Math.pow(2,this.map.transform.zoom), 0.01), 0.1); // Constant screen size
+
+      var cellSize = Math.max(500/Math.pow(2,this.map.transform.zoom) / this._cellDensity, 0.01); // Constant screen size
       
       // TODO: These extents don't work when the map is rotated
       var extents = this.map.getBounds().toArray()
@@ -166,11 +191,15 @@ HexgridHeatmap.prototype = {
               this._calculatingGrid = false;
             }
        }
+       else {
+        this._recalcWhenReady = true;
+       }
     },
     _checkUpdateComplete: function(e) {
       if(e.dataType == "source") {
         this.source.off("data", this._checkUpdateCompleteClosure);  
         this._calculatingGrid = false;
+        if(this._recalcWhenReady) this._updateGrid();
       }
     }
 };
