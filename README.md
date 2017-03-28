@@ -1,6 +1,6 @@
 ## Hexgrid-based vector heatmaps for your Mapbox GL JS Maps
 
-![](docs/hexgrid-heatmap.png)
+![](https://github.com/kronick/HexgridHeatmap/raw/master/docs/hexgrid-heatmap.png)
 
 
 ### Usage

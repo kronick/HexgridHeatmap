@@ -1,6 +1,6 @@
 {
-  "name": "hexgridheatmap",
-  "version": "1.0.0",
+  "name": "hexgrid-heatmap",
+  "version": "0.1.2",
   "description": "A hexgrid-based heatmap layer for your Mapbox GL JS map",
   "main": "HexgridHeatmap.js",
   "scripts": {
@@ -16,5 +16,15 @@
     "@turf/distance": "^3.10.3",
     "@turf/hex-grid": "^3.10.3",
     "rbush": "^2.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kronick/HexgridHeatmap.git"
+  },
+  "author": "Sam Kronick <sam.kronick@mapbox.com> (http://samkronick.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kronick/HexgridHeatmap/issues"
+  },
+  "homepage": "https://github.com/kronick/HexgridHeatmap#readme"
 }
