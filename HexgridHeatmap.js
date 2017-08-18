@@ -61,10 +61,10 @@ HexgridHeatmap.prototype = {
         this.source = this.map.getSource(layername);
     },
     _setupEvents: function() {
-        var thisthis = this;
-        this.map.on("moveend", function() {
-            thisthis._updateGrid();
-        });
+        // var thisthis = this;
+        // this.map.on("moveend", function() {
+        //     thisthis._updateGrid();
+        // });
     },
 
 
